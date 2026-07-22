@@ -1,0 +1,13 @@
+{
+  "name": "internship-board-automation",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Daily GitHub Action that refreshes listings.json for the internship board, no server or n8n instance required.",
+  "scripts": {
+    "fetch": "node scripts/fetch-listings.mjs"
+  },
+  "dependencies": {
+    "rss-parser": "^3.13.0"
+  }
+}
