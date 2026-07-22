@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Colombo & Remote Tech Internship Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#13211d;
+    --paper:#f5f6f2;
+    --surface:#ffffff;
+    --line:#dfe3dc;
+    --muted:#5d6b64;
+    --board:#0f2a22;
+    --emerald:#0e7a5f;
+    --de:#0e7a5f;   /* data engineering */
+    --da:#2563c9;   /* data analyst */
+    --ds:#7a3fc9;   /* data scientist */
+    --se:#c0632a;   /* software engineering */
+    --remote:#0e7a5f;
+    --new:#e0451f;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Inter",system-ui,sans-serif;line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 20px;}
+
+  /* ---------- Board header ---------- */
+  header.board{
+    background:var(--board);color:#eef3ef;
+    border-bottom:3px solid var(--emerald);
+  }
+  .board-inner{
+    max-width:1120px;margin:0 auto;padding:26px 20px 24px;
+    display:flex;flex-wrap:wrap;align-items:flex-end;
+    justify-content:space-between;gap:18px;
+  }
+  .eyebrow{
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.28em;
+    text-transform:uppercase;color:#6fbfa4;margin:0 0 8px;
+  }
+  h1{
+    font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
+    font-size:clamp(28px,5vw,46px);line-height:1.02;margin:0;letter-spacing:-.015em;
+    max-width:16ch;
+  }
+  .subtitle{color:#a9bdb3;margin:12px 0 0;font-size:14.5px;max-width:46ch;}
+  .counter{
+    font-family:"JetBrains Mono",monospace;text-align:right;min-width:120px;
+  }
+  .counter .num{
+    font-size:52px;font-weight:700;line-height:1;color:#fff;display:block;
+    font-variant-numeric:tabular-nums;
+  }
+  .counter .lbl{
+    font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:#6fbfa4;
+    display:block;margin-top:6px;
+  }
+  .stamp{
+    font-family:"JetBrains Mono",monospace;font-size:11px;color:#7f9389;
+    margin-top:10px;
+  }
+
+  /* ---------- Controls ---------- */
+  .controls{
+    position:sticky;top:0;z-index:20;background:rgba(245,246,242,.94);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+    padding:14px 0;
+  }
+  .controls-inner{display:flex;flex-wrap:wrap;gap:14px;align-items:center;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{
+    font-family:"JetBrains Mono",monospace;font-size:11.5px;letter-spacing:.04em;
+    text-transform:uppercase;padding:7px 13px;border:1px solid var(--line);
+    background:var(--surface);border-radius:999px;cursor:pointer;color:var(--muted);
+    transition:all .15s ease;white-space:nowrap;
+  }
+  .chip:hover{border-color:#b9c2b8;color:var(--ink);}
+  .chip[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .chip .dot{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:7px;vertical-align:middle;}
+
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--surface);}
+  .seg button{
+    font-family:"JetBrains Mono",monospace;font-size:11.5px;letter-spacing:.04em;
+    text-transform:uppercase;padding:7px 14px;border:0;background:transparent;
+    cursor:pointer;color:var(--muted);
+  }
+  .seg button[aria-pressed="true"]{background:var(--emerald);color:#fff;}
+
+  .search{flex:1;min-width:180px;}
+  .search input{
+    width:100%;font-family:"Inter",sans-serif;font-size:14px;padding:9px 14px;
+    border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);
+  }
+  .search input:focus{outline:2px solid var(--emerald);outline-offset:1px;border-color:transparent;}
+
+  /* ---------- Listings ---------- */
+  main{padding:30px 0 10px;}
+  .section-head{
+    display:flex;align-items:baseline;gap:12px;margin:0 0 16px;
+  }
+  .section-head h2{
+    font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:20px;margin:0;letter-spacing:-.01em;
+  }
+  .section-head .hint{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--muted);}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;}
+  .card{
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    border-left:4px solid var(--emerald);padding:18px 18px 16px;
+    display:flex;flex-direction:column;gap:0;transition:transform .12s ease,box-shadow .12s ease;
+    position:relative;
+  }
+  .card:hover{transform:translateY(-2px);box-shadow:0 8px 24px -14px rgba(19,33,29,.35);}
+  .card.de{border-left-color:var(--de);}
+  .card.da{border-left-color:var(--da);}
+  .card.ds{border-left-color:var(--ds);}
+  .card.se{border-left-color:var(--se);}
+  .cat-tag{
+    font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.12em;
+    text-transform:uppercase;font-weight:700;margin-bottom:9px;
+  }
+  .card.de .cat-tag{color:var(--de);}
+  .card.da .cat-tag{color:var(--da);}
+  .card.ds .cat-tag{color:var(--ds);}
+  .card.se .cat-tag{color:var(--se);}
+  .role{
+    font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:18px;
+    line-height:1.15;margin:0 0 3px;letter-spacing:-.01em;
+  }
+  .company{font-size:13.5px;color:var(--muted);margin:0 0 12px;font-weight:500;}
+  .meta{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-top:auto;}
+  .pill{
+    font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.03em;
+    padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);
+    display:inline-flex;align-items:center;gap:5px;
+  }
+  .pill.loc-remote{border-color:var(--remote);color:var(--remote);}
+  .pill.loc-colombo{background:#eef4f1;border-color:#d3e2da;color:#2c5647;}
+  .pill.date{color:var(--muted);}
+  .badge-new{
+    position:absolute;top:14px;right:14px;font-family:"JetBrains Mono",monospace;
+    font-size:9.5px;letter-spacing:.14em;font-weight:700;color:#fff;background:var(--new);
+    padding:3px 7px;border-radius:5px;text-transform:uppercase;
+  }
+  .card-foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:10px;}
+  .source{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:#9aa6a0;}
+  .apply{
+    font-family:"JetBrains Mono",monospace;font-size:11.5px;font-weight:700;text-transform:uppercase;
+    letter-spacing:.04em;text-decoration:none;color:var(--emerald);white-space:nowrap;
+    display:inline-flex;align-items:center;gap:5px;
+  }
+  .apply:hover{text-decoration:underline;}
+  .note{font-size:12px;color:var(--muted);margin:8px 0 0;font-style:italic;}
+  .empty{
+    grid-column:1/-1;text-align:center;padding:50px 20px;color:var(--muted);
+    font-family:"JetBrains Mono",monospace;font-size:13px;
+  }
+
+  /* ---------- Launchpad ---------- */
+  .launch{background:var(--board);color:#eef3ef;margin-top:44px;padding:44px 0 40px;}
+  .launch h2{
+    font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(22px,3.5vw,32px);
+    margin:0 0 6px;color:#fff;letter-spacing:-.01em;
+  }
+  .launch .lead{color:#a9bdb3;margin:0 0 26px;font-size:14px;max-width:60ch;}
+  .lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
+  .lcard{
+    background:#15332a;border:1px solid #244a3d;border-radius:11px;padding:16px 17px;
+  }
+  .lcard h3{
+    font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.06em;text-transform:uppercase;
+    color:#7fd3b6;margin:0 0 4px;
+  }
+  .lcard p{font-size:12px;color:#93a89e;margin:0 0 13px;line-height:1.4;}
+  .lcard a{
+    display:block;font-size:13px;color:#eaf3ef;text-decoration:none;padding:6px 0;
+    border-top:1px solid #22453a;
+  }
+  .lcard a:first-of-type{border-top:0;}
+  .lcard a:hover{color:#fff;}
+  .lcard a::before{content:"→ ";color:#5fb899;}
+
+  .section-head{align-items:center;}
+  .refresh{
+    margin-left:auto;font-family:"JetBrains Mono",monospace;font-size:11.5px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.05em;color:#fff;background:var(--emerald);
+    border:0;border-radius:999px;padding:9px 16px;cursor:pointer;display:inline-flex;
+    align-items:center;gap:8px;transition:background .15s ease;
+  }
+  .refresh:hover{background:#0c6a52;}
+  .refresh:focus-visible{outline:2px solid var(--ink);outline-offset:2px;}
+  .refresh:disabled{opacity:.65;cursor:progress;}
+  .refresh .spin{
+    width:12px;height:12px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;
+    border-radius:50%;display:none;
+  }
+  .refresh.loading .spin{display:inline-block;animation:spin .7s linear infinite;}
+  .refresh.loading .ico{display:none;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .refresh-status{
+    font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--muted);
+    margin:0 0 16px;min-height:15px;
+  }
+  .card.fresh-hit{animation:pop .45s ease;}
+  @keyframes pop{0%{transform:scale(.96);opacity:0;}100%{transform:scale(1);opacity:1;}}
+
+  footer{padding:30px 0 46px;color:var(--muted);font-size:12.5px;}
+  footer p{margin:6px 0;}
+  footer .legend{display:flex;flex-wrap:wrap;gap:16px;margin:14px 0;font-family:"JetBrains Mono",monospace;font-size:11px;}
+  footer .legend span{display:inline-flex;align-items:center;gap:6px;}
+  footer .legend i{width:11px;height:11px;border-radius:3px;display:inline-block;}
+
+  @media (max-width:560px){
+    .board-inner{flex-direction:column;align-items:flex-start;}
+    .counter{text-align:left;}
+    .grid{grid-template-columns:1fr;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important;scroll-behavior:auto!important;}
+  }
+</style>
+</head>
+<body>
+
+<header class="board">
+  <div class="board-inner">
+    <div>
+      <p class="eyebrow">Data & Software · Colombo + Remote</p>
+      <h1>The Internship Board</h1>
+      <p class="subtitle">Current intern openings in data engineering, data analytics, data science, and software engineering — around Colombo or fully remote.</p>
+      <p class="stamp" id="stamp"></p>
+    </div>
+    <div class="counter">
+      <span class="num" id="count">0</span>
+      <span class="lbl">Open positions</span>
+    </div>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="wrap controls-inner">
+    <div class="chips" id="cat-chips" role="group" aria-label="Filter by role">
+      <button class="chip" data-cat="all" aria-pressed="true">All roles</button>
+      <button class="chip" data-cat="de" aria-pressed="false"><span class="dot" style="background:var(--de)"></span>Data Eng</button>
+      <button class="chip" data-cat="da" aria-pressed="false"><span class="dot" style="background:var(--da)"></span>Data Analyst</button>
+      <button class="chip" data-cat="ds" aria-pressed="false"><span class="dot" style="background:var(--ds)"></span>Data Sci</button>
+      <button class="chip" data-cat="se" aria-pressed="false"><span class="dot" style="background:var(--se)"></span>Software Eng</button>
+    </div>
+    <div class="seg" id="loc-seg" role="group" aria-label="Filter by location">
+      <button data-loc="all" aria-pressed="true">All</button>
+      <button data-loc="colombo" aria-pressed="false">Colombo</button>
+      <button data-loc="remote" aria-pressed="false">Remote</button>
+    </div>
+    <div class="search">
+      <input id="search" type="search" placeholder="Search company or role…" aria-label="Search listings">
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Open listings</h2>
+      <span class="hint" id="fresh-hint"></span>
+      <button id="refresh-btn" class="refresh" type="button">
+        <span class="spin" aria-hidden="true"></span><span class="ico" aria-hidden="true">⟳</span><span>Refresh feed</span>
+      </button>
+    </div>
+    <p class="refresh-status" id="refresh-status" role="status" aria-live="polite"></p>
+    <div class="grid" id="grid"></div>
+    <p class="note">Snapshot compiled 20 July 2026 from ITPro.lk. Dates are when each ad was posted; boards like ITPro.lk keep ads live for up to ~3 months. Use the launchpad below to pull the very latest.</p>
+  </div>
+</main>
+
+<section class="launch">
+  <div class="wrap">
+    <h2>Live search launchpad</h2>
+    <p class="lead">This page is a snapshot — these links run a fresh, pre-filtered search on each source so you always see today's openings. Open a few in new tabs.</p>
+    <div class="lgrid" id="lgrid"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="legend">
+      <span><i style="background:var(--de)"></i>Data Engineering</span>
+      <span><i style="background:var(--da)"></i>Data Analyst</span>
+      <span><i style="background:var(--ds)"></i>Data Scientist</span>
+      <span><i style="background:var(--se)"></i>Software Engineering</span>
+    </div>
+    <p>Always verify the role is still open on the employer's own page before applying. You should never have to pay to apply to an internship.</p>
+    <p>Sources: ITPro.lk, DevJobs.lk, LinkedIn, Google Jobs, Recruit.net, topjobs.lk, Indeed, Glassdoor, Deloitte / IFS / Xeptagon careers, StillHiring.today, RemoteRocketship, Internshala, and the boards linked above.</p>
+  </div>
+</footer>
+
+<script>
+// ---- Fallback seed (used only if listings.json fails to load) ----
+let listings = [
+  // Software Engineering — ITPro.lk (colombo/remote only)
+  {role:"Intern Software Engineer (Frontend & Backend)", company:"ByteSquad Labs", cat:"se", loc:"remote", date:"2026-07-16", source:"ITPro.lk", url:"https://itpro.lk/job/14355/intern-software-engineer-frontend-backend-at-bytesquad-labs/"},
+  {role:"Internship Back-End Developer (PHP / Java)", company:"Neo Solution", cat:"se", loc:"colombo", date:"2026-07-13", source:"ITPro.lk", url:"https://itpro.lk/job/14313/internship-back-end-developer-php-java-at-neo-solution/"},
+  {role:"Software Engineering Intern", company:"Project Cubit", cat:"se", loc:"colombo", date:"2026-07-12", source:"ITPro.lk", url:"https://itpro.lk/job/14299/software-engineering-intern-at-project-cubit/"},
+  {role:"Intern — Software Development", company:"Artin Solutions", cat:"se", loc:"colombo", date:"2026-07-11", source:"ITPro.lk", url:"https://itpro.lk/job/14290/intern-software-development-at-artin-solutions/"},
+  {role:"Software Engineer Intern", company:"Velorex Labs", cat:"se", loc:"remote", date:"2026-07-11", source:"ITPro.lk", url:"https://itpro.lk/job/14286/software-engineer-intern-at-velorex-labs/"},
+  {role:"Intern — Software Engineering", company:"Xeynergy", cat:"se", loc:"colombo", date:"2026-07-09", source:"ITPro.lk", url:"https://itpro.lk/job/14068/intern-software-engineering-at-xeynergy/"},
+  {role:"Software Engineer Intern (.NET Developer)", company:"D HELP HUB", cat:"se", loc:"colombo", date:"2026-07-09", source:"ITPro.lk", url:"https://itpro.lk/job/14265/software-engineer-intern-net-developer-at-d-help-hub-private-limited/"},
+  {role:"Intern — Software Engineer (NestJS)", company:"EN2H", cat:"se", loc:"remote", date:"2026-07-08", source:"ITPro.lk", url:"https://itpro.lk/job/14263/intern-software-engineer-nestjs-at-en2h/"},
+  {role:"Full Stack Engineer — Intern", company:"aSyntax", cat:"se", loc:"remote", date:"2026-07-05", source:"ITPro.lk", url:"https://itpro.lk/job/13698/full-stack-engineer-%e2%80%93-intern-at-asyntax/"},
+  {role:"Software Engineering Intern", company:"TeaAI (Pekoe Pvt Ltd)", cat:"se", loc:"colombo", date:"2026-07-04", source:"ITPro.lk", url:"https://itpro.lk/job/14221/software-engineering-intern-at-teaai-pekoe-pvt-ltd/"},
+  {role:"Intern Software Engineer", company:"HealthRecon Connect", cat:"se", loc:"colombo", date:"2026-07-03", source:"ITPro.lk", url:"https://itpro.lk/job/14232/intern-software-engineer-at-healthrecon-connect-llc/"},
+  {role:"Intern Software Engineer", company:"Kyno Labs", cat:"se", loc:"colombo", date:"2026-06-30", source:"ITPro.lk", url:"https://itpro.lk/job/14182/intern-software-engineer-at-kyno-labs/"},
+  {role:"ERP Developer Intern", company:"EverestX Technologies", cat:"se", loc:"remote", date:"2026-06-29", source:"ITPro.lk", url:"https://itpro.lk/job/14164/erp-developer-intern-at-everestx-technologies/"},
+  {role:"Automation Engineering Intern", company:"Mindox Techno", cat:"se", loc:"colombo", date:"2026-06-28", source:"ITPro.lk", url:"https://itpro.lk/job/14155/automation-engineering-intern-at-mindox-techno/"},
+  {role:"Software Engineering — Internship, Python", company:"Vijins Lanka", cat:"se", loc:"colombo", date:"2026-06-25", source:"ITPro.lk", url:"https://itpro.lk/job/14131/software-engineering-internship-python-at-vijins-lanka/"},
+
+  // AI & Data — ITPro.lk (colombo/remote only)
+  {role:"Intern Database Engineer", company:"Onsys Technologies", cat:"de", loc:"colombo", date:"2026-06-28", source:"ITPro.lk", url:"https://itpro.lk/job/14153/intern-database-engineer-at-onsys-technologies/"},
+  {role:"AI/ML Intern", company:"Decryptogen", cat:"ds", loc:"colombo", date:"2026-06-18", source:"ITPro.lk", url:"https://itpro.lk/job/14052/aiml-intern-at-decryptogen/"},
+  {role:"Data Analyst Intern", company:"EverestX Technologies", cat:"da", loc:"remote", date:"2026-06-16", source:"ITPro.lk", url:"https://itpro.lk/job/14031/data-analyst-intern-at-everestx-technologies/"},
+  {role:"Intern — Data Science / Machine Learning Engineer", company:"Evoke Labs", cat:"ds", loc:"colombo", date:"2026-06-13", source:"ITPro.lk", url:"https://itpro.lk/job/14006/intern-data-science-machine-learning-engineer-at-evoke-labs/"},
+  {role:"Data Analyst Intern", company:"Appz Makers Pvt Ltd", cat:"da", loc:"remote", date:"2026-06-09", source:"ITPro.lk", url:"https://itpro.lk/job/13976/data-analyst-intern-at-appz-makers-pvt-ltd/"},
+  {role:"Intern — Data Engineer", company:"Expernetic", cat:"de", loc:"colombo", date:"2026-06-09", source:"ITPro.lk", url:"https://itpro.lk/job/13972/intern-%e2%80%93-data-engineer-at-expernetic/"},
+  {role:"Machine Learning Engineer — Intern", company:"Silverline IT", cat:"ds", loc:"remote", date:"2026-05-25", source:"ITPro.lk", url:"https://itpro.lk/job/13482/machine-learning-engineer-%e2%80%93-intern-at-silverline-it/"},
+  {role:"AI & ML Engineer — Intern", company:"Duovate International", cat:"ds", loc:"remote", date:"2026-05-04", source:"ITPro.lk", url:"https://itpro.lk/job/13633/ai-ml-engineer-intern-at-duovate-international/"},
+];
+
+const catName = {de:"Data Engineering", da:"Data Analyst", ds:"Data Scientist", se:"Software Engineering"};
+const TODAY = new Date();
+
+const fmtDate = iso => {
+  const d = new Date(iso);
+  return d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
+};
+const isNew = iso => (TODAY - new Date(iso)) / 86400000 <= 8;
+
+let filterCat = "all", filterLoc = "all", query = "";
+
+function render(){
+  const grid = document.getElementById("grid");
+  const items = listings
+    .filter(j => filterCat==="all" || j.cat===filterCat)
+    .filter(j => filterLoc==="all" || j.loc===filterLoc)
+    .filter(j => {
+      if(!query) return true;
+      const q = query.toLowerCase();
+      return j.company.toLowerCase().includes(q) || j.role.toLowerCase().includes(q) || catName[j.cat].toLowerCase().includes(q);
+    })
+    .sort((a,b) => new Date(b.date) - new Date(a.date));
+
+  document.getElementById("count").textContent = String(items.length).padStart(2,"0");
+
+  if(items.length===0){
+    grid.innerHTML = '<div class="empty">No listings match these filters.<br>Try the live search launchpad below for the latest openings.</div>';
+    return;
+  }
+
+  grid.innerHTML = items.map(j => `
+    <article class="card ${j.cat}${j._fresh ? ' fresh-hit' : ''}">
+      ${isNew(j.date) ? '<span class="badge-new">New</span>' : ''}
+      <div class="cat-tag">${catName[j.cat]}</div>
+      <h3 class="role">${j.role}</h3>
+      <p class="company">${j.company}</p>
+      ${j.note ? `<p class="note" style="margin:0 0 12px">${j.note}</p>` : ''}
+      <div class="meta">
+        <span class="pill loc-${j.loc}">${j.loc==="remote" ? "◇ Remote" : "◆ Colombo"}</span>
+        <span class="pill date">${fmtDate(j.date)}</span>
+      </div>
+      <div class="card-foot">
+        <span class="source">via ${j.source}</span>
+        <a class="apply" href="${j.url}" target="_blank" rel="noopener">View &amp; apply →</a>
+      </div>
+    </article>
+  `).join("");
+}
+
+// ---- Live search launchpad ----
+const launchpad = [
+  {name:"LinkedIn Jobs", desc:"Intern roles filtered to Sri Lanka.", links:[
+    ["Data intern · Sri Lanka","https://www.linkedin.com/jobs/search/?keywords=data%20intern&location=Sri%20Lanka&f_E=1"],
+    ["Software engineer intern","https://www.linkedin.com/jobs/search/?keywords=software%20engineer%20intern&location=Sri%20Lanka&f_E=1"],
+    ["Remote data intern","https://www.linkedin.com/jobs/search/?keywords=data%20intern&f_WT=2&f_E=1"],
+  ]},
+  {name:"Google Jobs", desc:"Aggregates most boards below.", links:[
+    ["Data eng intern · Colombo","https://www.google.com/search?q=data+engineering+intern+colombo&ibp=htl;jobs"],
+    ["Data analyst intern · Colombo","https://www.google.com/search?q=data+analyst+intern+colombo&ibp=htl;jobs"],
+    ["Remote data science intern","https://www.google.com/search?q=remote+data+science+intern&ibp=htl;jobs"],
+  ]},
+  {name:"ITPro.lk", desc:"Sri Lanka IT board, dated ads.", links:[
+    ["AI & Data internships","https://itpro.lk/jobs/ai-and-data/internship/"],
+    ["Software Eng internships","https://itpro.lk/jobs/software-engineering/internship/"],
+    ["All internships · Colombo","https://itpro.lk/jobs-in/colombo/internship/"],
+  ]},
+  {name:"topjobs.lk", desc:"Major SL vacancy network.", links:[
+    ["Software / IT vacancies","https://www.topjobs.lk/applicant/vacancybyfunctionalarea.jsp?FA=SDQ"],
+    ["topjobs home","https://www.topjobs.lk/"],
+  ]},
+  {name:"StillHiring.today", desc:"Fresh remote roles, fast.", links:[
+    ["Browse StillHiring","https://stillhiring.today/"],
+  ]},
+  {name:"RemoteRocketship", desc:"Remote intern listings by role.", links:[
+    ["Data engineer internships","https://www.remoterocketship.com/jobs/data-engineer/internships/"],
+    ["Data analyst internships","https://www.remoterocketship.com/jobs/data-analyst/internships/"],
+  ]},
+  {name:"Recruit.net (LK)", desc:"Aggregated Sri Lanka jobs.", links:[
+    ["Data engineering jobs","https://lk.recruit.net/search-data-engineering-jobs"],
+    ["Software intern jobs","https://lk.recruit.net/search-software-engineer-intern-jobs"],
+  ]},
+  {name:"FlexJobs", desc:"Curated remote roles (paid).", links:[
+    ["Remote jobs","https://www.flexjobs.com/remote-jobs"],
+  ]},
+  {name:"SriLankaJob.org", desc:"Local SL listings.", links:[
+    ["Browse jobs","https://srilankajob.org/"],
+  ]},
+  {name:"Rooster.jobs", desc:"SL tech talent board.", links:[
+    ["Browse talent board","https://talent.rooster.jobs/"],
+  ]},
+  {name:"Google Careers", desc:"Internships at Google.", links:[
+    ["Student / intern roles","https://www.google.com/about/careers/applications/jobs/results/?employment_type=INTERN"],
+  ]},
+  {name:"Indeed & Internshala", desc:"High-volume aggregators.", links:[
+    ["Indeed · data intern SL","https://lk.indeed.com/jobs?q=data+intern&l=Colombo"],
+    ["Internshala · data science","https://internshala.com/internships/data-science-internship-in-colombo-sri-lanka/"],
+  ]},
+];
+
+document.getElementById("lgrid").innerHTML = launchpad.map(s => `
+  <div class="lcard">
+    <h3>${s.name}</h3>
+    <p>${s.desc}</p>
+    ${s.links.map(([t,u]) => `<a href="${u}" target="_blank" rel="noopener">${t}</a>`).join("")}
+  </div>
+`).join("");
+
+// ---- Wire up controls ----
+document.getElementById("cat-chips").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if(!b) return;
+  filterCat = b.dataset.cat;
+  document.querySelectorAll("#cat-chips .chip").forEach(c => c.setAttribute("aria-pressed", c===b));
+  render();
+});
+document.getElementById("loc-seg").addEventListener("click", e => {
+  const b = e.target.closest("button"); if(!b) return;
+  filterLoc = b.dataset.loc;
+  document.querySelectorAll("#loc-seg button").forEach(c => c.setAttribute("aria-pressed", c===b));
+  render();
+});
+document.getElementById("search").addEventListener("input", e => { query = e.target.value; render(); });
+
+// ---- Live data: listings.json is rewritten daily by a GitHub Action ----
+// (scripts/fetch-listings.mjs pulls ITPro.lk's RSS feed + RemoteOK + Arbeitnow,
+// dedupes against what's already there, and commits the result.)
+let previousKeys = new Set();
+
+function keyOf(j){ return (j.company+"|"+j.role).toLowerCase(); }
+
+function markFresh(newList){
+  const prevKeys = new Set(listings.map(keyOf));
+  newList.forEach(j => { if(!prevKeys.has(keyOf(j))) j._fresh = true; });
+  return newList;
+}
+
+async function loadListings({ manual=false } = {}){
+  const btn = document.getElementById("refresh-btn");
+  const status = document.getElementById("refresh-status");
+  if(manual){ btn.classList.add("loading"); btn.disabled = true; status.textContent = "Checking for updates…"; }
+
+  try{
+    const res = await fetch("listings.json?_=" + Date.now(), { cache: "no-store" });
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    const data = await res.json();
+    if(!Array.isArray(data)) throw new Error("Unexpected format");
+    const added = data.length - listings.filter(j => data.some(d => keyOf(d)===keyOf(j))).length;
+    listings = markFresh(data);
+    render();
+    document.getElementById("stamp").textContent =
+      "Snapshot · updated " + new Date().toLocaleString("en-GB",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}) + " · " + listings.length + " openings tracked";
+    if(manual){
+      status.textContent = added>0
+        ? "Loaded "+added+" new listing"+(added>1?"s":"")+" from the last automated run."
+        : "You're up to date with the last automated run.";
+    }
+    setTimeout(() => { listings.forEach(j => delete j._fresh); }, 3000);
+  }catch(err){
+    render(); // still render the embedded fallback seed
+    if(manual) status.textContent = "Couldn't load listings.json — check the file is deployed alongside index.html.";
+  }finally{
+    if(manual){ btn.classList.remove("loading"); btn.disabled = false; }
+  }
+}
+document.getElementById("refresh-btn").addEventListener("click", () => loadListings({ manual: true }));
+
+// ---- Stamps ----
+document.getElementById("stamp").textContent = "Snapshot · " + TODAY.toLocaleDateString("en-GB",{day:"2-digit",month:"long",year:"numeric"}) + " · " + listings.length + " openings tracked";
+document.getElementById("fresh-hint").textContent = "newest first";
+
+render();
+loadListings(); // pull the automation's latest output on page load
+</script>
+</body>
+</html>
